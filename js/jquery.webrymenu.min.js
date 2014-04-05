@@ -1,5 +1,5 @@
 /*
- * jquery.webrymenu.js v1.0.1
+ * jquery.webrymenu.js v1.0.2
  * https://github.com/webryone/jquery.webrymenu.js/
  * 
  * MIT licensed
