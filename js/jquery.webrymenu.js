@@ -1,5 +1,5 @@
 /*
- * jquery.webrymenu.js v1.0.0
+ * jquery.webrymenu.js v1.0.1
  * https://github.com/webryone/jquery.webrymenu.js/
  * 
  * MIT licensed
@@ -15,7 +15,14 @@
 
         // オプション初期化
         _option = {
+            enable3d:           option.enable3d || false,
+            rotateX:            option.rotateX || "0deg",
+            rotateY:            option.rotateY || "45deg",
+            transformOrigin:    option.transformOrigin || "left center",
+            perspective:        option.perspective || "3000px",
             duration:           option.duration || 500,
+            delay:              option.delay || 0,
+            easing:             option.easing || "linear",
             windowBreakPoint:   parseInt(option.windowBreakPoint, 10) || 769,
             width:              option.width || "65%",
             position:           option.position || "absolute",
@@ -172,7 +179,7 @@
                     top:                0,
                     left:               0,
                     width:              "100%",
-                    height:             $(window).height()+"px",
+                    height:             ( $(_option.contentsWrapperId).height() <= $(window).height() ) ? $(window).height()+"px" : $(_option.contentsWrapperId).height()+"px",
                     "background-color": _option.overlayBgColor,
                     opacity:            _option.overlayOpacity
                 })
@@ -195,12 +202,29 @@
             }
 
             // ページラッパーをアニメーション
-            var pageWrapperSlidePx = (toggleOnFlag) ? ("0px"): ($("#"+newId).width()+"px");
+            var transformValue,
+            pageWrapperSlidePx = (toggleOnFlag) ? ("0px"): ($("#"+newId).width()+"px");
 
             if ( has3d() ) {    //3D系対応なら
+                if ( _option.enable3d ) {   //3dオプション trueなら
+
+                    transformValue
+                    = (toggleOnFlag)
+                    ? "translateX(0px) rotateX(0deg) rotateY(0deg)"
+                    : "translateX("+pageWrapperSlidePx+") rotateX("+_option.rotateX+") rotateY("+_option.rotateY+")";
+
+                    // 3Dプロパティを適用
+                    $("body")[0].style[changeCss3PropToJsRef("perspective")]                            = _option.perspective;
+                    $(_option.contentsWrapperId)[0].style[changeCss3PropToJsRef("transform-style")]     = "preserve-3d";
+                    $(_option.contentsWrapperId)[0].style[changeCss3PropToJsRef("transform-origin")]    = _option.transformOrigin;
+                    
+                } else {    //3dオプション falseなら
+                    transformValue = "translateX("+pageWrapperSlidePx+")";
+                }
+
                 // CSS3アニメーション
-                $(_option.contentsWrapperId)[0].style[transformProp]    = "translateX("+pageWrapperSlidePx+")";
-                $(_option.contentsWrapperId)[0].style[transitionProp]   = vendorPrefix()+"transform"+" "+_option.duration+"ms"+" "+"ease";
+                $(_option.contentsWrapperId)[0].style[transformProp]    = transformValue;
+                $(_option.contentsWrapperId)[0].style[transitionProp]   = vendorPrefix()+"transform"+" "+_option.duration+"ms"+" "+_option.delay+"ms"+" "+_option.easing;
             } else {    //3D未対応なら
                 //jQueryアニメーション
                 $(_option.contentsWrapperId).animate(
@@ -208,7 +232,9 @@
                     left: pageWrapperSlidePx
                 },
                 {
-                    duration: _option.duration
+                    duration: _option.duration,
+                    delay:    _option.delay,
+                    easing:   _option.easing
                 });
             }
 
@@ -218,7 +244,7 @@
             if ( has3d() ) {    //3D系対応なら
                 // CSS3アニメーション
                 $("#"+newId)[0].style[transformProp]    = "translateX("+sideMenuSlidePx+")";
-                $("#"+newId)[0].style[transitionProp]   = vendorPrefix()+"transform"+" "+_option.duration+"ms"+" "+"ease";
+                $("#"+newId)[0].style[transitionProp]   = vendorPrefix()+"transform"+" "+_option.duration+"ms"+" "+_option.delay+"ms"+" "+_option.easing;
             } else {    //3D未対応なら
                 //jQueryアニメーション
                 $("#"+newId).animate(
@@ -226,7 +252,9 @@
                     left: (toggleOnFlag) ? (-$("#"+newId).width()+"px"): "0px"
                 },
                 {
-                    duration: _option.duration
+                    duration: _option.duration,
+                    delay:    _option.delay,
+                    easing:   _option.easing
                 });
             }
 
