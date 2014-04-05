@@ -1,0 +1,33 @@
+{
+    "name": "webrymenu",
+    "title": "WebryMenu for jQuery",
+    "description": "jQuery plugin that can easily implement 3D animation possible Off-Canvas Navigation of cool already compatible Responsive design.",
+    "keywords": [
+        "Off-Canvas Navigation",
+        "Responsive",
+        "Sidebar",
+        "Side Navigation",
+        "3D animation",
+        "tablet",
+        "smartphone",
+        "mobile"
+    ],
+    "version": "1.0.1",
+    "author": {
+        "name": "Kohei Katada",
+        "url": "http://webryone.jp/jquery-plugin/webrymenu/"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/webryone/jquery.webrymenu.js/blob/master/readme.md"
+        }
+    ],
+    "bugs": "https://github.com/webryone/jquery.webrymenu.js/issues",
+    "homepage": "https://github.com/webryone/jquery.webrymenu.js",
+    "docs": "https://github.com/webryone/jquery.webrymenu.js/wiki",
+    "download": "https://github.com/webryone/jquery.webrymenu.js",
+    "dependencies": {
+        "jquery": ">=1.9.1"
+    }
+}
