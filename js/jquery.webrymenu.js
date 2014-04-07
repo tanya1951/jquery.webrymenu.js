@@ -1,5 +1,5 @@
 /*
- * jquery.webrymenu.js v1.0.2
+ * jquery.webrymenu.js v1.0.3
  * https://github.com/webryone/jquery.webrymenu.js/
  * 
  * MIT licensed
@@ -31,7 +31,9 @@
             overlayBgColor:     option.overlayBgColor || "#000",
             overlayOpacity:     option.overlayOpacity || 0.4,
             toggleElementId:    option.toggleElementId || "#toggleWebryMenu",
-            contentsWrapperId:  option.contentsWrapperId || "#pageWrapper"
+            contentsWrapperId:  option.contentsWrapperId || "#pageWrapper",
+            func_open:          option.completeOpened || function(){},
+            func_close:         option.completeClosed || function(){}
         },
 
         hasTouch = ("ontouchstart" in window) ? true : false,   //タッチデバイスの判定
@@ -214,9 +216,9 @@
                     : "translateX("+pageWrapperSlidePx+") rotateX("+_option.rotateX+") rotateY("+_option.rotateY+")";
 
                     // 3Dプロパティを適用
-                    $("body")[0].style[changeCss3PropToJsRef("perspective")]                            = _option.perspective;
-                    $(_option.contentsWrapperId)[0].style[changeCss3PropToJsRef("transform-style")]     = "preserve-3d";
-                    $(_option.contentsWrapperId)[0].style[changeCss3PropToJsRef("transform-origin")]    = _option.transformOrigin;
+                    $(_option.contentsWrapperId).parent()[0].style[changeCss3PropToJsRef("perspective")] = _option.perspective;
+                    $(_option.contentsWrapperId)[0].style[changeCss3PropToJsRef("transform-style")]      = "preserve-3d";
+                    $(_option.contentsWrapperId)[0].style[changeCss3PropToJsRef("transform-origin")]     = _option.transformOrigin;
                     
                 } else {    //3dオプション falseなら
                     transformValue = "translateX("+pageWrapperSlidePx+")";
@@ -241,7 +243,32 @@
             // サイドメニューをアニメーション
             var sideMenuSlidePx = (toggleOnFlag) ? (parseInt($("#"+newId).css("left"), 10)+"px"): (-parseInt($("#"+newId).css("left"), 10)+"px");
 
+            // コールバック関数
+            var callbackFunc = ( !toggleOnFlag ) ? _option.func_open : _option.func_close;
+
             if ( has3d() ) {    //3D系対応なら
+                // コールバックを削除 & 実行
+                var _handle = function () {
+                    // コールバックを削除
+                    $("#"+newId).off( "webkitTransitionEnd", _handle );
+                    $("#"+newId).off(    "MozTransitionEnd", _handle );
+                    $("#"+newId).off(    "mozTransitionEnd", _handle );
+                    $("#"+newId).off(     "msTransitionEnd", _handle );
+                    $("#"+newId).off(      "oTransitionEnd", _handle );
+                    $("#"+newId).off(       "transitionEnd", _handle );
+                    $("#"+newId).off(       "transitionend", _handle );
+                    // コールバックを実行
+                    ( typeof callbackFunc === "function" ) && callbackFunc();
+                };
+                // コールバックを登録
+                $("#"+newId).on( "webkitTransitionEnd", _handle );
+                $("#"+newId).on(    "MozTransitionEnd", _handle );
+                $("#"+newId).on(    "mozTransitionEnd", _handle );
+                $("#"+newId).on(     "msTransitionEnd", _handle );
+                $("#"+newId).on(      "oTransitionEnd", _handle );
+                $("#"+newId).on(       "transitionEnd", _handle );
+                $("#"+newId).on(       "transitionend", _handle );
+                
                 // CSS3アニメーション
                 $("#"+newId)[0].style[transformProp]    = "translateX("+sideMenuSlidePx+")";
                 $("#"+newId)[0].style[transitionProp]   = vendorPrefix()+"transform"+" "+_option.duration+"ms"+" "+_option.delay+"ms"+" "+_option.easing;
@@ -254,7 +281,8 @@
                 {
                     duration: _option.duration,
                     delay:    _option.delay,
-                    easing:   _option.easing
+                    easing:   _option.easing,
+                    complete: function () { ( typeof callbackFunc === "function" ) && callbackFunc(); }
                 });
             }
 
